@@ -56,6 +56,7 @@ class CrontabCommand extends Command
             $output->writeln('<info>Executing scheduled tasks…</info>');
             $defaultWorkerTimeout = $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['crontab']['workerTimeout'] ?? 0;
             $defaultWorkerForks = $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['crontab']['workerForks'] ?? 1;
+            $idleSleep = $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['crontab']['idleSleep'] ?? 5;
             $taskRepository = GeneralUtility::makeInstance(TaskRepository::class);
             $crontab = GeneralUtility::makeInstance(Crontab::class, $taskRepository);
             $processManager = GeneralUtility::makeInstance(ProcessManager::class, (int)($input->getOption('forks') ?? $defaultWorkerForks));
@@ -63,13 +64,21 @@ class CrontabCommand extends Command
 
             $runUntil = time() + (int)($input->getOption('timeout') ?? $defaultWorkerTimeout);
             do {
+                $tasksFound = false;
                 foreach ($crontab->dueTasks() as $taskIdentifier) {
                     $processManager->add(
                         TaskProcess::createFromTaskDefinition($taskRepository->findByIdentifier($taskIdentifier))
                     );
+                    $tasksFound = true;
                 }
+                
                 // Monitor processes to finish and wait for free spot
                 $processManager->wait();
+                
+                // If no tasks were found, sleep a bit longer to reduce CPU usage
+                if (!$tasksFound) {
+                    sleep($idleSleep);
+                }
             } while (time() < $runUntil);
             $processManager->finish();
             $lock->release();
