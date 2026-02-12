@@ -4,3 +4,5 @@ hideSchedulerModule = 1
 workerTimeout = 0
 # cat=basic//; type=integer; label=Default number of due tasks allowed to be run in parallel.
 workerForks = 1
+# cat=basic//; type=integer; label=Seconds to sleep when idle to preserve CPU (when last query did not return any tasks to execute)
+idleSleep = 5
