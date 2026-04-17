@@ -46,6 +46,13 @@ services:
                 description: 'Import Scheduler Tasks'
                 schedulable: false
 
+    Helhum\TYPO3\Crontab\Command\CrontabListCommand:
+        tags:
+            -   name: 'console.command'
+                command: 'crontab:list'
+                description: 'List all configured Crontab tasks'
+                schedulable: false
+
     Helhum\TYPO3\Crontab\EventListener\BeforeModuleCreationEventListener:
         tags:
             -
