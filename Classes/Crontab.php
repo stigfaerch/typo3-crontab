@@ -8,24 +8,18 @@ use Helhum\TYPO3\Crontab\Repository\TaskRepository;
 use Helhum\TYPO3\Crontab\Task\TaskDefinition;
 use TYPO3\CMS\Core\Database\Connection;
 use TYPO3\CMS\Core\Database\ConnectionPool;
-use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 class Crontab
 {
     private const scheduledTable = 'tx_crontab_scheduled';
-    /**
-     * @var TaskRepository
-     */
-    private object $taskRepository;
-    /**
-     * @var Connection
-     */
-    private $connection;
 
-    public function __construct(?TaskRepository $taskRepository = null, ?Connection $connection = null)
-    {
-        $this->taskRepository = $taskRepository ?? GeneralUtility::makeInstance(TaskRepository::class);
-        $this->connection = $connection ?? GeneralUtility::makeInstance(ConnectionPool::class)->getConnectionForTable(self::scheduledTable);
+    private readonly Connection $connection;
+
+    public function __construct(
+        private readonly TaskRepository $taskRepository,
+        ConnectionPool $connectionPool,
+    ) {
+        $this->connection = $connectionPool->getConnectionForTable(self::scheduledTable);
     }
 
     public function prepareSchedulingFinishedTasks(ProcessManager $processManager): void
