@@ -131,7 +131,7 @@ class CrontabScheduleCommand extends Command
         return 0;
     }
 
-    private function addAllTasksAction(InputInterface $input, OutputInterface $output): int
+    private function addAllTasksAction(OutputInterface $output): int
     {
         foreach ($this->taskRepository->findAll() as $taskDefinition) {
             $this->addTask($taskDefinition);
@@ -141,7 +141,7 @@ class CrontabScheduleCommand extends Command
         return 0;
     }
 
-    private function removeAllTasksAction(InputInterface $input, OutputInterface $output): int
+    private function removeAllTasksAction(OutputInterface $output): int
     {
         foreach ($this->taskRepository->findAll() as $taskDefinition) {
             $this->removeTask($taskDefinition);

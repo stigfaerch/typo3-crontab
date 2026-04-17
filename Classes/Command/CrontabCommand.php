@@ -41,11 +41,6 @@ class CrontabCommand extends Command
 
     /**
      * Execute crontab tasks
-     *
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     *
-     * @return int
      */
     public function execute(InputInterface $input, OutputInterface $output): int
     {
@@ -71,10 +66,10 @@ class CrontabCommand extends Command
                     );
                     $tasksFound = true;
                 }
-                
+
                 // Monitor processes to finish and wait for free spot
                 $processManager->wait();
-                
+
                 // If no tasks were found, sleep a bit longer to reduce CPU usage
                 if (!$tasksFound) {
                     sleep($idleSleep);

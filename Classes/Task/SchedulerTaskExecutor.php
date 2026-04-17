@@ -12,19 +12,10 @@ use TYPO3\CMS\Scheduler\Task\AbstractTask;
 
 class SchedulerTaskExecutor implements TaskExecutor
 {
-    /**
-     * @var array
-     */
-    private $options;
-
-    /**
-     * @var AbstractTask
-     */
-    private $schedulerTask;
+    private \TYPO3\CMS\Scheduler\Task\AbstractTask $schedulerTask;
 
     public function __construct(array $options)
     {
-        $this->options = $options;
         $this->schedulerTask = $this->createTask($options);
     }
 
@@ -33,7 +24,7 @@ class SchedulerTaskExecutor implements TaskExecutor
         return new self($options);
     }
 
-    public function run(Application $application, InputInterface $input = null, OutputInterface $output = null): bool
+    public function run(Application $application, ?InputInterface $input = null, ?OutputInterface $output = null): bool
     {
         return $this->schedulerTask->execute();
     }

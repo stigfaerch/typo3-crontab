@@ -16,13 +16,13 @@ class Crontab
     /**
      * @var TaskRepository
      */
-    private $taskRepository;
+    private object $taskRepository;
     /**
      * @var Connection
      */
     private $connection;
 
-    public function __construct(TaskRepository $taskRepository = null)
+    public function __construct(?TaskRepository $taskRepository = null, ?Connection $connection = null)
     {
         $this->taskRepository = $taskRepository ?? GeneralUtility::makeInstance(TaskRepository::class);
         $this->connection = $connection ?? GeneralUtility::makeInstance(ConnectionPool::class)->getConnectionForTable(self::scheduledTable);
@@ -62,7 +62,7 @@ class Crontab
         $fields = [
             'next_execution' => $executionTime->getTimestamp(),
         ];
-        if ($singleRun === true && $this->isScheduled($definition)) {
+        if ($singleRun && $this->isScheduled($definition)) {
             $singleRun = false;
         }
         if (!$this->willRun($definition)) {
@@ -136,7 +136,7 @@ class Crontab
                 'next_execution' => 'ASC',
             ]
         );
-        while ($scheduleInformation = $statement->fetch()) {
+        while ($scheduleInformation = $statement->fetchAssociative()) {
             if ($scheduleInformation['next_execution'] > time()) {
                 break;
             }
