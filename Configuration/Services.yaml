@@ -53,6 +53,13 @@ services:
                 description: 'List all configured Crontab tasks'
                 schedulable: false
 
+    Helhum\TYPO3\Crontab\Command\CrontabShowCommand:
+        tags:
+            -   name: 'console.command'
+                command: 'crontab:show'
+                description: 'Show all details about a single Crontab task'
+                schedulable: false
+
     Helhum\TYPO3\Crontab\EventListener\BeforeModuleCreationEventListener:
         tags:
             -

@@ -38,10 +38,15 @@ class CrontabListCommand extends Command
             return Command::SUCCESS;
         }
 
-        $table = new Table($output);
-        $table->setHeaders(['Group', 'Identifier', 'Type', 'Title', 'Scheduled', 'Next execution']);
+        $output->writeln('<info>Hint: run <comment>crontab:show \<identifier></comment> for full task details.</info>');
 
         foreach ($groupedTasks as $groupName => $tasks) {
+            $output->writeln('');
+            $output->writeln(sprintf('<comment>%s</comment>', $groupName));
+
+            $table = new Table($output);
+            $table->setHeaders(['Identifier', 'Type', 'Title', 'Arguments', 'Scheduled', 'Next execution']);
+
             foreach ($tasks as $identifier => $taskDefinition) {
                 $scheduled = $this->crontab->isScheduled($taskDefinition);
                 $nextExecution = '-';
@@ -49,17 +54,17 @@ class CrontabListCommand extends Command
                     $nextExecution = $this->crontab->nextExecution($taskDefinition)->format('Y-m-d H:i:s');
                 }
                 $table->addRow([
-                    $groupName,
                     $identifier,
                     $this->resolveType($taskDefinition),
                     $this->resolveTitle($taskDefinition),
+                    $this->resolveArguments($taskDefinition),
                     $scheduled ? 'yes' : 'no',
                     $nextExecution,
                 ]);
             }
-        }
 
-        $table->render();
+            $table->render();
+        }
 
         return Command::SUCCESS;
     }
@@ -96,5 +101,24 @@ class CrontabListCommand extends Command
         }
 
         return $taskDefinition->getTitle();
+    }
+
+    private function resolveArguments(TaskDefinition $taskDefinition): string
+    {
+        $executor = $taskDefinition->getProcessDefinition()->getExecutor();
+
+        if (!$executor instanceof CommandExecutor
+            && !$executor instanceof ScriptExecutor
+            && !$executor instanceof SchedulerTaskExecutor
+        ) {
+            return '';
+        }
+
+        $arguments = implode(', ', array_map(
+            static fn($value): string => is_scalar($value) ? (string)$value : json_encode($value),
+            array_values($executor->getArguments()),
+        ));
+
+        return mb_strimwidth($arguments, 0, 25, '…');
     }
 }

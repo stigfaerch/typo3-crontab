@@ -53,4 +53,9 @@ class CommandExecutor implements TaskExecutor
     {
         return 0.0;
     }
+
+    public function getArguments(): array
+    {
+        return $this->options['arguments'] ?? [];
+    }
 }

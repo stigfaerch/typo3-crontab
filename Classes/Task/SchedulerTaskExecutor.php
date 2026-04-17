@@ -12,10 +12,13 @@ use TYPO3\CMS\Scheduler\Task\AbstractTask;
 
 class SchedulerTaskExecutor implements TaskExecutor
 {
-    private \TYPO3\CMS\Scheduler\Task\AbstractTask $schedulerTask;
+    private array $options;
+
+    private AbstractTask $schedulerTask;
 
     public function __construct(array $options)
     {
+        $this->options = $options;
         $this->schedulerTask = $this->createTask($options);
     }
 
@@ -46,6 +49,11 @@ class SchedulerTaskExecutor implements TaskExecutor
         }
 
         return $this->schedulerTask->getProgress();
+    }
+
+    public function getArguments(): array
+    {
+        return $this->options['arguments'] ?? [];
     }
 
     private function createTask(array $options): AbstractTask
