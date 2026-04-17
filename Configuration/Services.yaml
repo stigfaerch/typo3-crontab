@@ -4,7 +4,8 @@ services:
         autoconfigure: true
         public: false
 
-    Helhum\TYPO3\Crontab\Crontab: ~
+    Helhum\TYPO3\Crontab\Crontab:
+        public: true
 
     Helhum\TYPO3\Crontab\ViewHelpers\:
         resource: '../Classes/ViewHelpers/*'
