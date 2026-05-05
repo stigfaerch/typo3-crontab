@@ -33,7 +33,8 @@ class CrontabModuleController extends ActionController
 
     public function listAction(): ResponseInterface
     {
-        $this->view->assignMultiple([
+        $moduleTemplate = $this->moduleTemplateFactory->create($this->request);
+        $moduleTemplate->assignMultiple([
             'groupedTasks' => $this->taskRepository->getGroupedTasks(),
             'crontab' => $this->crontab,
             'processManager' => $this->processManager,
@@ -41,11 +42,7 @@ class CrontabModuleController extends ActionController
             'now' => new \DateTimeImmutable(),
         ]);
 
-        $moduleTemplate = $this->moduleTemplateFactory->create($this->request);
-        // Adding title, menus, buttons, etc. using $moduleTemplate ...
-        $moduleTemplate->setContent($this->view->render());
-
-        return $this->htmlResponse($moduleTemplate->renderContent());
+        return $moduleTemplate->renderResponse('CrontabModule/List');
     }
 
     public function toggleScheduleAction(string $identifier): ResponseInterface
