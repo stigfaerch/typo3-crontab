@@ -16,10 +16,7 @@ class CrontabModuleController extends ActionController
 
     private \Helhum\TYPO3\Crontab\Crontab $crontab;
 
-    /**
-     * @var ProcessManager
-     */
-    private object $processManager;
+    private ProcessManager $processManager;
 
     private \TYPO3\CMS\Backend\Template\ModuleTemplateFactory $moduleTemplateFactory;
 
